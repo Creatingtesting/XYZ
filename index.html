@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Link Bypass Tool</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #1e3c72, #2a5298);
+      padding: 20px;
+      color: white;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 600px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    .description {
+      margin-bottom: 25px;
+      color: #e0e0e0;
+      line-height: 1.5;
+    }
+    
+    .input-group {
+      margin-bottom: 25px;
+    }
+    
+    .textbox {
+      width: 100%;
+      padding: 15px 20px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      outline: none;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+      margin-bottom: 15px;
+    }
+    
+    .textbox:focus {
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.4);
+      transform: scale(1.01);
+    }
+    
+    .textbox::placeholder {
+      color: #aaa;
+    }
+    
+    .btn {
+      padding: 15px 30px;
+      font-size: 18px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(to right, #ff7e5f, #feb47b);
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .result {
+      margin-top: 20px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      text-align: left;
+      display: none;
+    }
+    
+    .result h3 {
+      margin-bottom: 10px;
+      color: #ff7e5f;
+    }
+    
+    #bypassed-link {
+      word-break: break-all;
+      color: #feb47b;
+      font-weight: 500;
+    }
+    
+    .copy-btn {
+      margin-top: 15px;
+      padding: 10px 15px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    
+    .instructions {
+      margin-top: 30px;
+      text-align: left;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 10px;
+    }
+    
+    .instructions h3 {
+      margin-bottom: 10px;
+      color: #ff7e5f;
+    }
+    
+    .instructions ol {
+      padding-left: 20px;
+    }
+    
+    .instructions li {
+      margin-bottom: 10px;
+      line-height: 1.5;
+    }
+    
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 25px;
+      background: #4CAF50;
+      color: white;
+      border-radius: 5px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+      transform: translateX(200%);
+      transition: transform 0.3s ease;
+    }
+    
+    .notification.show {
+      transform: translateX(0);
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Link Bypass Tool</h1>
+    <p class="description">Paste your Linkvertise or other restricted link below to bypass it</p>
+    
+    <div class="input-group">
+      <input type="text" class="textbox" id="link-input" placeholder="Paste your link here...">
+      <button class="btn" id="bypass-btn">Bypass Link</button>
+    </div>
+    
+    <div class="result" id="result">
+      <h3>Bypassed Link:</h3>
+      <p id="bypassed-link"></p>
+      <button class="copy-btn" id="copy-btn">Copy Link</button>
+    </div>
+    
+    <div class="instructions">
+      <h3>How to use:</h3>
+      <ol>
+        <li>Copy the Linkvertise or other restricted link you want to bypass</li>
+        <li>Paste it into the textbox above</li>
+        <li>Click the "Bypass Link" button</li>
+        <li>Copy the resulting direct link from the result box</li>
+      </ol>
+    </div>
+  </div>
+  
+  <div class="notification" id="notification">Link copied to clipboard!</div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const linkInput = document.getElementById('link-input');
+      const bypassBtn = document.getElementById('bypass-btn');
+      const resultDiv = document.getElementById('result');
+      const bypassedLink = document.getElementById('bypassed-link');
+      const copyBtn = document.getElementById('copy-btn');
+      const notification = document.getElementById('notification');
+      
+      // Function to simulate link bypassing (in a real application, this would call an API)
+      function bypassLink(link) {
+        // This is a simulation - in reality, you would need to use a backend service
+        // to properly bypass Linkvertise links due to CORS and security restrictions
+        
+        // For demonstration purposes, we'll just modify the link slightly
+        if (link.includes('linkvertise')) {
+          return link.replace('linkvertise.com', 'direct-link.com');
+        }
+        
+        // For other links, just return a simulated direct link
+        return link + '?direct=true';
+      }
+      
+      // Handle bypass button click
+      bypassBtn.addEventListener('click', function() {
+        const inputLink = linkInput.value.trim();
+        
+        if (!inputLink) {
+          alert('Please enter a link to bypass');
+          return;
+        }
+        
+        // Simulate processing delay
+        bypassBtn.textContent = 'Processing...';
+        bypassBtn.disabled = true;
+        
+        setTimeout(() => {
+          const processedLink = bypassLink(inputLink);
+          
+          // Display result
+          bypassedLink.textContent = processedLink;
+          resultDiv.style.display = 'block';
+          
+          // Reset button
+          bypassBtn.textContent = 'Bypass Link';
+          bypassBtn.disabled = false;
+        }, 1500);
+      });
+      
+      // Handle copy button click
+      copyBtn.addEventListener('click', function() {
+        const textToCopy = bypassedLink.textContent;
+        
+        // Use Clipboard API to copy text
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          // Show notification
+          notification.classList.add('show');
+          
+          // Hide notification after 2 seconds
+          setTimeout(() => {
+            notification.classList.remove('show');
+          }, 2000);
+        }).catch(err => {
+          console.error('Failed to copy: ', err);
+          alert('Failed to copy link. Please select and copy it manually.');
+        });
+      });
+      
+      // Allow pressing Enter to submit
+      linkInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          bypassBtn.click();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
